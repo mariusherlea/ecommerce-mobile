@@ -1,31 +1,67 @@
-import { StyleSheet } from 'react-native';
+//app/(tabs)/index.tsx
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "expo-router";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { getProducts } from "../../src/api/products";
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
+  });
+
+  if (isLoading) {
+    return (
+      <View style={{ padding: 20 }}>
+        <Text>Loading products...</Text>
+      </View>
+    );
+  }
+
+  if (!data || !data.data) {
+    return (
+      <View style={{ padding: 20 }}>
+        <Text>No products found.</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+    <ScrollView style={{ padding: 16 }}>
+      {data.data.map((product: any) => {
+        // STRAPI v5 — fields SUNT DIRECT PE OBJECT
+        const img =
+          product?.images?.data?.[0]?.url ||
+          "https://via.placeholder.com/300";
+
+        return (
+          <Link
+            key={product.id}
+            href={`/product/${product.id}`}
+            asChild
+          >
+            <TouchableOpacity style={{ marginBottom: 24 }}>
+              <Image
+                source={{ uri: img }}
+                style={{
+                  width: "100%",
+                  height: 200,
+                  borderRadius: 12,
+                }}
+              />
+
+              <Text style={{ fontSize: 20, marginTop: 8 }}>
+                {product.title}
+              </Text>
+
+              <Text style={{ fontSize: 16, opacity: 0.7 }}>
+                {product.price} €
+              </Text>
+            </TouchableOpacity>
+          </Link>
+        );
+      })}
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
