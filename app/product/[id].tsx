@@ -1,4 +1,5 @@
 //app/product/[id].tsx
+
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Button, Image, ScrollView, Text, View } from "react-native";
@@ -8,12 +9,14 @@ import { useCartStore } from "../../src/store/cartStore";
 export default function ProductScreen() {
   const { id } = useLocalSearchParams();
 
+  console.log("DOCUMENT ID PRIMIT:", id);
+
   const { data, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: () => getProduct(id as string),
   });
 
-  const addToCart = useCartStore((state) => state.addToCart);
+  const addToCart = useCartStore((s) => s.addToCart);
 
   if (isLoading) {
     return (
@@ -23,15 +26,15 @@ export default function ProductScreen() {
     );
   }
 
-  if (!data?.data) {
+  const product = data?.data?.[0];
+
+  if (!product) {
     return (
       <View style={{ padding: 20 }}>
         <Text>Product not found.</Text>
       </View>
     );
   }
-
-  const product = data.data;
 
   const image =
     product?.images?.data?.[0]?.url ||
@@ -41,15 +44,10 @@ export default function ProductScreen() {
     <ScrollView style={{ padding: 20 }}>
       <Image
         source={{ uri: image }}
-        style={{
-          width: "100%",
-          height: 280,
-          marginBottom: 20,
-          borderRadius: 8,
-        }}
+        style={{ width: "100%", height: 280, borderRadius: 8 }}
       />
 
-      <Text style={{ fontSize: 26, fontWeight: "600" }}>
+      <Text style={{ fontSize: 26, fontWeight: "600", marginTop: 20 }}>
         {product.title}
       </Text>
 
@@ -58,7 +56,7 @@ export default function ProductScreen() {
       </Text>
 
       <Text style={{ marginBottom: 20 }}>
-        {product.description}
+        {JSON.stringify(product.description)}
       </Text>
 
       <Button

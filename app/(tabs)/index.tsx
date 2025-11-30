@@ -31,6 +31,8 @@ export default function HomeScreen() {
     <ScrollView style={{ padding: 16 }}>
       {data.data.map((product: any) => {
         // STRAPI v5 — fields SUNT DIRECT PE OBJECT
+        console.log("PRODUCT OBJECT:", product);
+
         const img =
           product?.images?.data?.[0]?.url ||
           "https://via.placeholder.com/300";
@@ -38,7 +40,7 @@ export default function HomeScreen() {
         return (
           <Link
             key={product.id}
-            href={`/product/${product.id}`}
+            href={`/product/${product.documentId}`}
             asChild
           >
             <TouchableOpacity style={{ marginBottom: 24 }}>
