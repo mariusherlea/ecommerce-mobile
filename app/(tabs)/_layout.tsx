@@ -1,11 +1,12 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import React from 'react';
-import { Pressable } from 'react-native';
-
+//app/(tabs)/_layout.tsx
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+import { useCartStore } from '@/src/store/cartStore';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Link, Tabs } from 'expo-router';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -18,6 +19,10 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  const items = useCartStore((s) => s.items);
+const cartCount = items.reduce((sum, item) => sum + item.qty, 0);
+
+
   return (
     <Tabs
       screenOptions={{
@@ -29,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -48,12 +53,44 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cart"
-        options={{
-          title: 'Cart',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
+  name="cart"
+  options={{
+    title: "Cart",
+    tabBarIcon: ({ color }) => (
+      <View style={{ position: "relative" }}>
+        <TabBarIcon name="shopping-cart" color={color} />
+
+        {cartCount > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              right: -6,
+              top: -4,
+              backgroundColor: "red",
+              borderRadius: 10,
+              minWidth: 18,
+              height: 18,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 3,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 12,
+                fontWeight: "bold",
+              }}
+            >
+              {cartCount}
+            </Text>
+          </View>
+        )}
+      </View>
+    ),
+  }}
+/>
+
       <Tabs.Screen
   name="product/[id]"
   options={{
