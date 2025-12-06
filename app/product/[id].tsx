@@ -1,5 +1,6 @@
 //app/product/[id].tsx
 
+import RichText from "@/components/RichText";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Button, Image, ScrollView, Text, View } from "react-native";
@@ -55,9 +56,7 @@ export default function ProductScreen() {
         {product.price} €
       </Text>
 
-      <Text style={{ marginBottom: 20 }}>
-        {JSON.stringify(product.description)}
-      </Text>
+      <RichText content={product.description}/>
 
       <Button
         title="Add to Cart"
