@@ -4,8 +4,8 @@ import RichText from "@/components/RichText";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Button, Image, ScrollView, Text, View } from "react-native";
-import { getProduct } from "../../src/api/products";
-import { useCartStore } from "../../src/store/cartStore";
+import { getProduct } from "../../../src/api/products";
+import { useCartStore } from "../../../src/store/cartStore";
 
 export default function ProductScreen() {
   const { id } = useLocalSearchParams();

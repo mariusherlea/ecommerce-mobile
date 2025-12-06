@@ -54,6 +54,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
+      <Tabs.Screen
+  name="product/[id]"
+  options={{
+    title: "Product",
+    href: null, // IMPORTANT: ascunde din tab bar
+  }}
+/>
+
     </Tabs>
   );
 }
