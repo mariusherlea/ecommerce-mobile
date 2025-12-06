@@ -21,6 +21,8 @@ export default function TabLayout() {
 
   const items = useCartStore((s) => s.items);
 const cartCount = items.reduce((sum, item) => sum + item.qty, 0);
+const totalPrice = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+
 
 
   return (
@@ -52,14 +54,17 @@ const cartCount = items.reduce((sum, item) => sum + item.qty, 0);
           ),
         }}
       />
-      <Tabs.Screen
+   <Tabs.Screen
   name="cart"
   options={{
     title: "Cart",
     tabBarIcon: ({ color }) => (
-      <View style={{ position: "relative" }}>
+      <View style={{ position: "relative", alignItems: "center" }}>
+        
+        {/* Iconița */}
         <TabBarIcon name="shopping-cart" color={color} />
 
+        {/* Badge cu număr produse */}
         {cartCount > 0 && (
           <View
             style={{
@@ -86,10 +91,25 @@ const cartCount = items.reduce((sum, item) => sum + item.qty, 0);
             </Text>
           </View>
         )}
+
+        {/* Total price */}
+        {totalPrice > 0 && (
+          <Text
+            style={{
+              fontSize: 11,
+              marginTop: 2,
+              color,
+              fontWeight: "600",
+            }}
+          >
+            {totalPrice.toFixed(2)} €
+          </Text>
+        )}
       </View>
     ),
   }}
 />
+
 
       <Tabs.Screen
   name="product/[id]"
