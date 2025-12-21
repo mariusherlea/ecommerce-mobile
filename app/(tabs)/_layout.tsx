@@ -110,6 +110,15 @@ const totalPrice = items.reduce((sum, item) => sum + item.price * item.qty, 0);
   }}
 />
 
+<Tabs.Screen
+  name="orders"
+  options={{
+    title: "My Orders",
+    tabBarIcon: ({ color }) => (
+      <TabBarIcon name="list" color={color} />
+    ),
+  }}
+/>
 
       <Tabs.Screen
   name="product/[id]"
