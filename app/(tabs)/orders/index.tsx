@@ -1,13 +1,20 @@
 // app/(tabs)/orders/index.tsx
 import { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  View,
+} from "react-native";
 import { AuthContext } from "../../../src/context/AuthContext";
 
 type Order = {
   id: number;
-  total: number;
-  status: string;
-  createdAt: string;
+  attributes: {
+    total: number;
+    status: string;
+    createdAt: string;
+  };
 };
 
 const API_URL = "http://192.168.2.33:1337"; // IP-ul tău
@@ -17,43 +24,21 @@ export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ TEST OBLIGATORIU (users/me)
-  useEffect(() => {
-    if (!token) return;
-
-    fetch(`${API_URL}/api/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("✅ users/me OK:", data);
-      })
-      .catch((err) => {
-        console.error("❌ users/me ERROR:", err);
-      });
-  }, [token]);
-
-  // ✅ FETCH ORDERS
   useEffect(() => {
     if (!user || !token) return;
 
     async function fetchOrders() {
       try {
-        const res = await fetch(
-          `${API_URL}/api/orders?filters[user][id][$eq]=${user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${API_URL}/api/orders`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
         const json = await res.json();
         setOrders(json.data ?? []);
-      } catch (error) {
-        console.error("❌ Failed to fetch orders", error);
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
       } finally {
         setLoading(false);
       }
@@ -62,14 +47,14 @@ export default function OrdersScreen() {
     fetchOrders();
   }, [user, token]);
 
-  // ⛔ render logic DOAR după hooks
-  if (!user) {
-    return <Text>You must be logged in</Text>;
-  }
+if (loading) {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
 
-  if (loading) {
-    return <ActivityIndicator size="large" />;
-  }
 
   return (
     <View style={{ padding: 20 }}>
@@ -85,25 +70,35 @@ export default function OrdersScreen() {
         <FlatList
           data={orders}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                marginTop: 15,
-                padding: 15,
-                borderWidth: 1,
-                borderRadius: 8,
-              }}
-            >
-              <Text>Order ID: {item.id}</Text>
-              <Text>Status: {item.status}</Text>
-              <Text>Total: ${item.total}</Text>
-              <Text>
-                Date: {new Date(item.createdAt).toLocaleDateString()}
-              </Text>
-            </View>
-          )}
+         renderItem={({ item }) => {
+  const { status, total, createdAt } = item.attributes ?? {};
+
+  return (
+    <View
+      style={{
+        marginTop: 15,
+        padding: 15,
+        borderWidth: 1,
+        borderRadius: 8,
+      }}
+    >
+      <Text>Order #{item.id}</Text>
+      <Text>Status: {String(status ?? "")}</Text>
+      <Text>Total: {total ? `${total} €` : "—"}</Text>
+      <Text>
+        Date:{" "}
+        {createdAt
+          ? new Date(createdAt).toLocaleDateString()
+          : "—"}
+      </Text>
+    </View>
+  );
+}}
+
+
         />
       )}
     </View>
   );
 }
+
