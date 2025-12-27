@@ -56,7 +56,7 @@ export default function ProductScreen() {
         {product.price} €
       </Text>
 
-      <RichText content={product.description}/>
+      <RichText content={product.description?.[0]?.children?.[0]?.text ?? ""}/>
 
       <Button
         title="Add to Cart"
