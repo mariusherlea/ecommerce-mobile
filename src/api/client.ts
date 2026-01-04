@@ -1,6 +1,6 @@
 import { getToken } from "../utils/secureStore";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL_API;
 
 export const api = async (path: string, options: RequestInit = {}) => {
   const token = await getToken();

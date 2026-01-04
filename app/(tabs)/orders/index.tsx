@@ -4,10 +4,12 @@ import { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   Text,
-  View,
+  View
 } from "react-native";
 import { AuthContext } from "../../../src/context/AuthContext";
+import LoginScreen from "../login";
 
 const API_URL = "http://192.168.2.33:1337";
 
@@ -23,12 +25,17 @@ function normalizeOrder(order: any) {
 }
 
 export default function OrdersScreen() {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, signOut } = useContext(AuthContext);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔐 DACA NU E LOGAT → ARATĂ LOGIN (CU TAB-URI)
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   useEffect(() => {
-    if (!user || !token) return;
+    if (!token) return;
 
     async function fetchOrders() {
       try {
@@ -48,7 +55,7 @@ export default function OrdersScreen() {
     }
 
     fetchOrders();
-  }, [user, token]);
+  }, [token]);
 
   if (loading) {
     return (
@@ -63,6 +70,21 @@ export default function OrdersScreen() {
       <Text style={{ fontSize: 24, fontWeight: "700" }}>
         My Orders
       </Text>
+
+      <Pressable
+        onPress={signOut}
+        style={{
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          backgroundColor: "#eee",
+          borderRadius: 6,
+          alignSelf: "flex-end",
+        }}
+      >
+        <Text style={{ fontSize: 14, fontWeight: "600" }}>
+          Logout
+        </Text>
+      </Pressable>
 
       <Text style={{ fontSize: 16, marginBottom: 10, opacity: 0.7 }}>
         Orders for {user?.username ?? user?.email}
@@ -107,3 +129,4 @@ export default function OrdersScreen() {
     </View>
   );
 }
+
